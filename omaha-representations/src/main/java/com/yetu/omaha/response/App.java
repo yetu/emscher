@@ -1,6 +1,8 @@
 package com.yetu.omaha.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.yetu.omaha.Ping;
+import com.yetu.omaha.UpdateCheck;
 
 public class App {
 

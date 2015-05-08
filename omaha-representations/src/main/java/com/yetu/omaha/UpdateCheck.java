@@ -1,8 +1,10 @@
-package com.yetu.omaha.response;
+package com.yetu.omaha;
 
 import java.util.Collection;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.yetu.omaha.response.Manifest;
+import com.yetu.omaha.response.Url;
 
 public class UpdateCheck {
 
