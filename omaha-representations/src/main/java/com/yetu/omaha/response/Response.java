@@ -2,6 +2,7 @@ package com.yetu.omaha.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
+import com.yetu.omaha.App;
 
 @JacksonXmlRootElement(localName="response")
 public class Response {

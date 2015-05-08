@@ -12,6 +12,8 @@ public class UpdateCheck {
 	private Manifest manifest;
 	private String status;
 
+	private String targetversionprefix;
+
 	public Collection<Url> getUrls() {
 		return urls;
 	}
@@ -35,6 +37,15 @@ public class UpdateCheck {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	@JacksonXmlProperty(isAttribute = true)
+	public String getTargetversionprefix() {
+		return targetversionprefix;
+	}
+
+	public void setTargetversionprefix(String targetversionprefix) {
+		this.targetversionprefix = targetversionprefix;
 	}
 
 }

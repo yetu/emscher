@@ -3,6 +3,7 @@ package com.yetu.omaha.response;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.yetu.omaha.App;
 import com.yetu.omaha.Ping;
 import com.yetu.omaha.UpdateCheck;
 
