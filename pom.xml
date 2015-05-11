@@ -9,10 +9,12 @@
 	<description>Omaha update server for ChromeOS based OS</description>
 	<modules>
 		<module>omaha-representations</module>
+		<module>app</module>
 	</modules>
 	<properties>
 		<dropwizard.version>0.8.1</dropwizard.version>
 		<dropwizard-xml-version>0.8.1-21</dropwizard-xml-version>
+		<dagger.version>1.2.2</dagger.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -27,6 +29,18 @@
 				<version>${dropwizard-xml-version}</version>
 				<scope>compile</scope>
 			</dependency>
+			<dependency>
+				<groupId>com.squareup.dagger</groupId>
+				<artifactId>dagger</artifactId>
+				<version>${dagger.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.squareup.dagger</groupId>
+				<artifactId>dagger-compiler</artifactId>
+				<version>${dagger.version}</version>
+				<optional>true</optional>
+			</dependency>
+			
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
