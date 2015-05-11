@@ -1,6 +1,5 @@
 package com.yetu.emscher.app.resources;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 
 import javax.inject.Inject;
@@ -11,18 +10,18 @@ import javax.ws.rs.core.MediaType;
 
 import com.yetu.emscher.app.UpdateRepository;
 import com.yetu.omaha.App;
+import com.yetu.omaha.request.Request;
 import com.yetu.omaha.response.Daystart;
 import com.yetu.omaha.response.Response;
-import com.yetu.omaha.request.Request;
 
 @Path("/update")
 public class UpdateResource {
 
+	UpdateRepository updateRepo;
+
 	@Inject
-	protected UpdateRepository updateRepo;
-
-	public UpdateResource() {
-
+	public UpdateResource(UpdateRepository updateRepo) {
+		this.updateRepo = updateRepo;
 	}
 
 	@POST
