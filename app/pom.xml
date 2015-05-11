@@ -27,6 +27,10 @@
 			<groupId>com.squareup.dagger</groupId>
 			<artifactId>dagger-compiler</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>${groupId}</groupId>
