@@ -9,6 +9,7 @@ public class Action {
 	private String sha256;
 	private boolean needsadmin;
 	private boolean IsDeltaPayload;
+	private long metaDataSize;
 
 	// FIXME: Possible extra attributes
 
@@ -55,6 +56,15 @@ public class Action {
 
 	public void setIsDeltaPayload(boolean isDeltaPayload) {
 		IsDeltaPayload = isDeltaPayload;
+	}
+
+	@JacksonXmlProperty(isAttribute = true, localName="MetadataSize")
+	public long getMetaDataSize() {
+		return metaDataSize;
+	}
+
+	public void setMetaDataSize(long metaDataSize) {
+		this.metaDataSize = metaDataSize;
 	}
 
 }

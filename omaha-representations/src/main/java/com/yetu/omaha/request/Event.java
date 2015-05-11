@@ -1,4 +1,4 @@
-package request;
+package com.yetu.omaha.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 

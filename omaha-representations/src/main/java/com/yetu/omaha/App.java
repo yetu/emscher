@@ -115,7 +115,7 @@ public class App {
 		this.fwVersion = fwVersion;
 	}
 
-	@JacksonXmlProperty(isAttribute = true, localName="fw_version")
+	@JacksonXmlProperty(isAttribute = true, localName="ec_version")
 	public String getEcVersion() {
 		return ecVersion;
 	}

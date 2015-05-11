@@ -1,4 +1,4 @@
-package request;
+package com.yetu.omaha.request;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.yetu.omaha.App;
@@ -8,6 +8,7 @@ public class Request {
 	private String protocol;
 	private String updaterversion;
 	private String installsource;
+	private String version;
 	private int ismachine;
 
 	private Os os;
@@ -63,6 +64,15 @@ public class Request {
 
 	public void setApp(App app) {
 		this.app = app;
+	}
+
+	@JacksonXmlProperty(isAttribute = true)
+	public String getVersion() {
+		return version;
+	}
+
+	public void setVersion(String version) {
+		this.version = version;
 	}
 
 }

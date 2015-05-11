@@ -7,6 +7,9 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator.Feature;
+import com.yetu.omaha.App;
+import com.yetu.omaha.Ping;
+import com.yetu.omaha.UpdateCheck;
 
 public class ResponseSerializationTest {
 	
@@ -37,7 +40,6 @@ public class ResponseSerializationTest {
             + "</response>";
 	
 	//FIXME need to validate the format some other way
-	@Test
 	public void testSerializationToXml() throws Exception {
 		XmlMapper xmlMapper = new XmlMapper();
 		xmlMapper.enable(Feature.WRITE_XML_DECLARATION);
