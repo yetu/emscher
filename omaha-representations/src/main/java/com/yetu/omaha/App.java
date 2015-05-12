@@ -1,6 +1,7 @@
 package com.yetu.omaha;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.yetu.omaha.request.Event;
 
 public class App {
 
@@ -14,9 +15,11 @@ public class App {
 	private String lang;
 	private String board;
 	private String hardwareClass;
-	private boolean deltaOkay;
+	private Boolean deltaOkay;
 	private String fwVersion;
 	private String ecVersion;
+	
+	private Event event;
 
 	@JacksonXmlProperty(isAttribute = true)
 	public String getAppid() {
@@ -98,11 +101,11 @@ public class App {
 	}
 
 	@JacksonXmlProperty(isAttribute = true, localName="delta_okay")
-	public boolean isDeltaOkay() {
+	public Boolean isDeltaOkay() {
 		return deltaOkay;
 	}
 
-	public void setDeltaOkay(boolean deltaOkay) {
+	public void setDeltaOkay(Boolean deltaOkay) {
 		this.deltaOkay = deltaOkay;
 	}
 
@@ -122,6 +125,14 @@ public class App {
 
 	public void setEcVersion(String ecVersion) {
 		this.ecVersion = ecVersion;
+	}
+
+	public Event getEvent() {
+		return event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 }

@@ -1,7 +1,9 @@
 package com.yetu.omaha.response;
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
+@JacksonXmlRootElement(localName="action")
 public class Action {
 
 	private String event;

@@ -5,9 +5,9 @@ import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 public class Ping {
 
 	private String status;
-	private int active;
-	private int a;
-	private int r;
+	private Integer active;
+	private Integer a;
+	private Integer r;
 
 	@JacksonXmlProperty(isAttribute = true)
 	public String getStatus() {
@@ -19,29 +19,29 @@ public class Ping {
 	}
 
 	@JacksonXmlProperty(isAttribute = true)
-	public int getActive() {
+	public Integer getActive() {
 		return active;
 	}
 
-	public void setActive(int active) {
+	public void setActive(Integer active) {
 		this.active = active;
 	}
 
 	@JacksonXmlProperty(isAttribute = true)
-	public int getA() {
+	public Integer getA() {
 		return a;
 	}
 
-	public void setA(int a) {
+	public void setA(Integer a) {
 		this.a = a;
 	}
 
 	@JacksonXmlProperty(isAttribute = true)
-	public int getR() {
+	public Integer getR() {
 		return r;
 	}
 
-	public void setR(int r) {
+	public void setR(Integer r) {
 		this.r = r;
 	}
 
