@@ -21,11 +21,4 @@ public class EmscherModule {
 		return config.getMantaConfig();
 	}
 
-	/*
-	 * @Provides
-	 * 
-	 * @Singleton public UpdateRepository provideUpdateRepository() { return
-	 * null; }
-	 */
-
 }
