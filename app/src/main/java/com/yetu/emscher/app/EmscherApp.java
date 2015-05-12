@@ -6,9 +6,12 @@ import io.dropwizard.setup.Environment;
 
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator.Feature;
+import com.yetu.emscher.app.config.EmscherConfiguration;
 import com.yetu.emscher.app.resources.TestResource;
 import com.yetu.emscher.app.resources.UpdateEngineRequestFilter;
 import com.yetu.emscher.app.resources.UpdateResource;
+import com.yetu.emscher.fakerepo.FakeModule;
+import com.yetu.emscher.mantarepo.MantaModule;
 import com.yunspace.dropwizard.xml.XmlBundle;
 
 import dagger.ObjectGraph;
@@ -49,7 +52,13 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 	}
 
 	private ObjectGraph getObjectGraph(EmscherConfiguration config) {
-		return ObjectGraph.create(new EmscherModule(config));
+		Object updateModule = null;
+		if ("fake".equals(config.getRepo())) {
+			updateModule = new FakeModule();
+		} else if ("manta".equals(config.getRepo())) {
+			updateModule = new MantaModule();
+		}
+		return ObjectGraph.create(new EmscherModule(config)).plus(updateModule);
 	}
 
 }

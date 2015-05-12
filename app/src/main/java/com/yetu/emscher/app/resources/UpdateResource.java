@@ -31,10 +31,10 @@ public class UpdateResource {
 	public UpdateResource(UpdateRepository updateRepo) {
 		this.updateRepo = updateRepo;
 		if (updateRepo == null) {
-			logger.warn("UpdateRepo is null, this will crash");
+			logger.error("DI didn't work as expected");
 		} else {
-			logger.debug("UpdateRepo implementation is "
-					+ updateRepo.getClass().getCanonicalName());
+			logger.debug("Implementation of UpdateRepository is {}", updateRepo
+					.getClass().getCanonicalName());
 		}
 	}
 

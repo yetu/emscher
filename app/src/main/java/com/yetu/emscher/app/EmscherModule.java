@@ -1,15 +1,13 @@
 package com.yetu.emscher.app;
 
-import javax.inject.Singleton;
-
+import com.yetu.emscher.app.config.EmscherConfiguration;
+import com.yetu.emscher.app.config.MantaConfig;
 import com.yetu.emscher.app.resources.TestResource;
-import com.yetu.emscher.app.resources.UpdateResource;
-import com.yetu.emscher.fakerepo.FakeUpdateRepo;
 
 import dagger.Module;
 import dagger.Provides;
 
-@Module(injects = { UpdateResource.class, FakeUpdateRepo.class, TestResource.class }, library = true )
+@Module(injects = { TestResource.class }, complete = true, library = true)
 public class EmscherModule {
 
 	private EmscherConfiguration config;
@@ -19,9 +17,15 @@ public class EmscherModule {
 	}
 
 	@Provides
-	@Singleton
-	public UpdateRepository provideUpdateRepo() {
-		return new FakeUpdateRepo();
+	public MantaConfig provideMantaConfig() {
+		return config.getMantaConfig();
 	}
+
+	/*
+	 * @Provides
+	 * 
+	 * @Singleton public UpdateRepository provideUpdateRepository() { return
+	 * null; }
+	 */
 
 }
