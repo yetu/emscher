@@ -1,0 +1,70 @@
+# Update events and result codes.
+EVENT_TYPE_UNKNOWN = 0
+EVENT_TYPE_DOWNLOAD_COMPLETE = 1
+EVENT_TYPE_INSTALL_COMPLETE = 2
+EVENT_TYPE_UPDATE_COMPLETE = 3
+EVENT_TYPE_UPDATE_DOWNLOAD_STARTED = 13
+EVENT_TYPE_UPDATE_DOWNLOAD_FINISHED = 14
+
+EVENT_RESULT_ERROR = 0
+EVENT_RESULT_SUCCESS = 1
+EVENT_RESULT_SUCCESS_REBOOT = 2
+EVENT_RESULT_UPDATE_DEFERRED = 9
+
+--------------------------
+
+
+Request: <?xml version="1.0" encoding="UTF-8"?>
+<request protocol="3.0" version="ChromeOSUpdateEngine-0.1.0.0" updaterversion="ChromeOSUpdateEngine-0.1.0.0" installsource="ondemandupdate" ismachine="1">
+    <os version="Indy" platform="Chrome OS" sp="ForcedUpdate_armv7l"></os>
+    <app appid="{87efface-864d-49a5-9bb3-4b050a7c227a}" version="ForcedUpdate" track="developer-build" lang="en-US" board="yetu-pfla02" hardware_class="" delta_okay="true" fw_version="" ec_version="" >
+        <event eventtype="3" eventresult="1"></event>
+    </app>
+</request>
+
+Omaha request response: <?xml version="1.0" encoding="UTF-8"?>
+  <response protocol="3.0">
+    <daystart elapsed_seconds="60231"/>
+    <app appid="{87efface-864d-49a5-9bb3-4b050a7c227a}" status="ok">
+      <ping status="ok"/>
+      <event status="ok"/>
+    </app>
+  </response>
+  
+-----------------------
+
+Request: <?xml version="1.0" encoding="UTF-8"?>
+<request protocol="3.0" version="ChromeOSUpdateEngine-0.1.0.0" updaterversion="ChromeOSUpdateEngine-0.1.0.0" installsource="ondemandupdate" ismachine="1">
+    <os version="Indy" platform="Chrome OS" sp="ForcedUpdate_armv7l"></os>
+    <app appid="{87efface-864d-49a5-9bb3-4b050a7c227a}" version="ForcedUpdate" track="developer-build" lang="en-US" board="yetu-pfla02" hardware_class="" delta_okay="true" fw_version="" ec_version="" >
+        <updatecheck targetversionprefix=""></updatecheck>
+        <event eventtype="3" eventresult="2" previousversion=""></event>
+    </app>
+</request>
+
+Omaha request response: <?xml version="1.0" encoding="UTF-8"?>
+  <response protocol="3.0">
+    <daystart elapsed_seconds="59616"/>
+    <app appid="{87efface-864d-49a5-9bb3-4b050a7c227a}" status="ok">
+      <ping status="ok"/>
+      <updatecheck status="ok">
+        <urls>
+          <url codebase="http://192.168.1.81:8080/static/yetu-pfla02/R39-6310.81.2015_05_11_1120-a1/"/>
+        </urls>
+        <manifest version="9999.0.0">
+          <packages>
+            <package hash="Aq/UZ23EzQNytOKox3QuHuB/8J8=" name="update.gz" size="365821577"
+                     required="true"/>
+          </packages>
+          <actions>
+            <action event="postinstall"
+              ChromeOSVersion="9999.0.0"
+              sha256="OAS4cNkVOx2yY7vY38b/pKJIwzQFewtDiotB1XNzcIc="
+              needsadmin="false"
+              IsDeltaPayload="false"
+              MetadataSize="68793" />
+          </actions>
+        </manifest>
+      </updatecheck>
+    </app>
+  </response>
