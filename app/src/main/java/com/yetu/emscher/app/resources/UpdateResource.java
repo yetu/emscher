@@ -1,5 +1,7 @@
 package com.yetu.emscher.app.resources;
 
+import io.dropwizard.jersey.caching.CacheControl;
+
 import java.time.LocalTime;
 
 import javax.inject.Inject;
@@ -40,6 +42,7 @@ public class UpdateResource {
 
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
+	@CacheControl(noCache = true)
 	public Response call(Request request) {
 		logger.debug("Received request for update endpoint");
 		// TODO check the request
