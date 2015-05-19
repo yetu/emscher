@@ -1,7 +1,7 @@
 repo: file
 file:
   basePath: "file:///Users/till/updates"
-  baseUrl: "http://localhost:8080/static"
+  baseUrl: "http://192.168.1.224:8080/static"
 
 assets:
   overrides:
@@ -13,6 +13,16 @@ manta:
   keyFingerprint: "77:ef:4d:a4:1a:33:42:3d:a5:f8:0a:b2:9d:17:67:e4"
   login: yetu
   privateKeyPath: "/Users/till/.ssh/id_rsa"
+
+server:
+  applicationContextPath: /gateway
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
 
 logging:
 

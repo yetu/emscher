@@ -1,10 +1,14 @@
 package com.yetu.emscher.app;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
 import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
+import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator.Feature;
 import com.yetu.emscher.app.config.EmscherConfiguration;
@@ -23,6 +27,10 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 
 	private Environment environment;
 
+	@Inject
+	@Named("repo")
+	HealthCheck repoHealthCheck;
+
 	public static void main(String[] args) throws Exception {
 		new EmscherApp().run(args);
 	}
@@ -33,8 +41,7 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 		xmlBundle.getXmlMapper().configure(Feature.WRITE_XML_DECLARATION, true);
 		xmlBundle.getXmlMapper().enable(SerializationFeature.INDENT_OUTPUT);
 		bootstrap.addBundle(xmlBundle);
-		bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/",
-				"/static/"));
+		bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/", "/static/"));
 
 		super.initialize(bootstrap);
 	}
@@ -44,6 +51,9 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 			throws Exception {
 		this.environment = environment;
 		objectGraph = getObjectGraph(configuration);
+		objectGraph.inject(this);
+
+		environment.healthChecks().register("repo", repoHealthCheck);
 
 		environment.jersey().register(UpdateEngineRequestFilter.class);
 
