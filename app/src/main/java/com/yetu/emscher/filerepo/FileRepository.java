@@ -10,10 +10,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetu.emscher.Metadata;
+import com.yetu.emscher.Utils;
 import com.yetu.emscher.app.UpdateRepository;
 import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.omaha.App;
@@ -25,6 +29,9 @@ import com.yetu.omaha.response.Package;
 import com.yetu.omaha.response.Url;
 
 public class FileRepository implements UpdateRepository {
+
+	private final static Logger logger = LoggerFactory
+			.getLogger(FileRepository.class);
 
 	private FileRepoConfig config;
 	private ObjectMapper jsonMapper;
@@ -39,22 +46,46 @@ public class FileRepository implements UpdateRepository {
 		String currentVersion = requestApp.getVersion();
 		String board = requestApp.getBoard();
 		String track = requestApp.getTrack();
+		logger.debug(
+				"Got update request for board {} with current version {} on track {}",
+				board, currentVersion, track);
 
 		URI boardSpecificUri = URI.create(config.getBasePath() + "/" + board
 				+ "/" + track);
 		Path path = Paths.get(boardSpecificUri);
 		File updatePathFile = path.toFile();
+		logger.debug(
+				"Trying to find a suitable update in filesystem in folder {}",
+				updatePathFile.getAbsolutePath());
+		if (!updatePathFile.isDirectory()) {
+			logger.error("{} is not a directory",
+					updatePathFile.getAbsolutePath());
+			return createNoUpdate();
+		}
 		File updateFolder = determineUpdateFolder(currentVersion,
 				getOrderedListOfUpdateFolder(Arrays.asList(updatePathFile
 						.listFiles())));
 
 		if (updateFolder == null) {
+			logger.debug("Didn't found a suitable update, returning no update response");
 			return createNoUpdate();
 		} else {
+			logger.debug("Found suitable update in folder {}",
+					updateFolder.getAbsolutePath());
+			File updatePayload = new File(updateFolder, "update.gz");
+			File metadataFile = new File(updateFolder, "update.meta");
+			if (!updatePayload.canRead() || !metadataFile.canRead()) {
+				logger.error("Missing update payload or meta data in {}",
+						updateFolder.getAbsolutePath());
+				return createNoUpdate();
+			}
 			try {
+				logger.debug("Returning update response");
 				return createUpdateResponse(updateFolder, requestApp,
 						config.getBaseUrl(), config.getBasePath());
 			} catch (IOException e) {
+				logger.error("Can't read update meta data from folder {}",
+						updateFolder.getAbsolutePath(), e);
 				return createNoUpdate();
 			}
 		}
@@ -80,9 +111,8 @@ public class FileRepository implements UpdateRepository {
 
 		UpdateCheck updateCheck = new UpdateCheck();
 		updateCheck.setStatus("ok");
-		// TODO check what path this is
-		updateCheck.addUrl(new Url(baseUrl
-				+ removeBasePathFromUpdatePath(updateFolder, basePath)+"/"));
+		updateCheck.addUrl(new Url(Utils.concatUrl(baseUrl,
+				removeBasePathFromUpdatePath(updateFolder, basePath))));
 
 		File metadataObject = new File(updateFolder, "update.meta");
 		Metadata metadata = jsonMapper
