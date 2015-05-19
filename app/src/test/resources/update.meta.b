@@ -1,0 +1,1 @@
+{"sha1": "JXq3p0Cxn2TZlfHG8A+f0eNHaD8=B", "metadata_size": 68784, "metadata_hash": "IMW/KpUC+xXdvlvdIsc/xKQuasCNoxXyOR8fj0MqTF8=B", "is_delta": true, "sha256": "z574z/ddsj94FS3qXItzwEhpoDtXMY2uJDyAnW4Uxpw=B", "size": 364964664}
