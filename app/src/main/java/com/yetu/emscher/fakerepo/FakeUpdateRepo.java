@@ -16,9 +16,6 @@ public class FakeUpdateRepo implements UpdateRepository {
 	}
 
 	public App getUpdateForVersion(App requestApp) {
-		String currentVersion = requestApp.getVersion();
-		String board = requestApp.getBoard();
-		String hardwareClass = requestApp.getHardwareClass();
 		App updatedApp = new App();
 		updatedApp.setAppid(requestApp.getAppid());
 		updatedApp.setStatus("ok");

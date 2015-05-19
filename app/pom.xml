@@ -32,8 +32,8 @@
 			<artifactId>guava</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.joyent.manta</groupId>
-			<artifactId>java-manta</artifactId>
+			<groupId>com.bazaarvoice.dropwizard</groupId>
+			<artifactId>dropwizard-configurable-assets-bundle</artifactId>
 		</dependency>
 
 		<dependency>

@@ -4,6 +4,7 @@ import io.dropwizard.Application;
 import io.dropwizard.setup.Bootstrap;
 import io.dropwizard.setup.Environment;
 
+import com.bazaarvoice.dropwizard.assets.ConfiguredAssetsBundle;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator.Feature;
 import com.yetu.emscher.app.config.EmscherConfiguration;
@@ -11,7 +12,7 @@ import com.yetu.emscher.app.resources.TestResource;
 import com.yetu.emscher.app.resources.UpdateEngineRequestFilter;
 import com.yetu.emscher.app.resources.UpdateResource;
 import com.yetu.emscher.fakerepo.FakeModule;
-import com.yetu.emscher.mantarepo.MantaModule;
+import com.yetu.emscher.filerepo.FileRepoModule;
 import com.yunspace.dropwizard.xml.XmlBundle;
 
 import dagger.ObjectGraph;
@@ -32,6 +33,9 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 		xmlBundle.getXmlMapper().configure(Feature.WRITE_XML_DECLARATION, true);
 		xmlBundle.getXmlMapper().enable(SerializationFeature.INDENT_OUTPUT);
 		bootstrap.addBundle(xmlBundle);
+		bootstrap.addBundle(new ConfiguredAssetsBundle("/assets/",
+				"/static/"));
+
 		super.initialize(bootstrap);
 	}
 
@@ -55,8 +59,8 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 		Object updateModule = null;
 		if ("fake".equals(config.getRepo())) {
 			updateModule = new FakeModule();
-		} else if ("manta".equals(config.getRepo())) {
-			updateModule = new MantaModule();
+		} else if ("file".equals(config.getRepo())) {
+			updateModule = new FileRepoModule();
 		}
 		return ObjectGraph.create(new EmscherModule(config)).plus(updateModule);
 	}

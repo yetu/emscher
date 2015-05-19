@@ -8,11 +8,13 @@ public class MantaConfig {
 
 	@NotEmpty
 	private String url;
-	@NotEmpty
+
 	private String login;
-	@NotEmpty
+
 	private String privateKey;
-	@NotEmpty
+
+	private String privateKeyPath;
+
 	private String keyFingerprint;
 	@NotEmpty
 	private String updateBasePath;
@@ -65,6 +67,16 @@ public class MantaConfig {
 	@JsonProperty
 	public void setUpdateBasePath(String updateBasePath) {
 		this.updateBasePath = updateBasePath;
+	}
+
+	@JsonProperty
+	public String getPrivateKeyPath() {
+		return privateKeyPath;
+	}
+
+	@JsonProperty
+	public void setPrivateKeyPath(String privateKeyPath) {
+		this.privateKeyPath = privateKeyPath;
 	}
 
 }

@@ -5,4 +5,4 @@
  * @author till
  *
  */
-package com.yetu.emscher.mantarepo;
+package com.yetu.emscher.filerepo;
