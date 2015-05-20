@@ -6,12 +6,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetu.emscher.app.config.EmscherConfiguration;
 import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.emscher.app.config.MantaConfig;
-import com.yetu.emscher.app.resources.TestResource;
 
 import dagger.Module;
 import dagger.Provides;
 
-@Module(injects = { TestResource.class }, complete = true, library = true)
+@Module(injects = { }, complete = true, library = true)
 public class EmscherModule {
 
 	private EmscherConfiguration config;
