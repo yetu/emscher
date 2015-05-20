@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<request protocol="3.0" version="ChromeOSUpdateEngine-0.1.0.0" updaterversion="ChromeOSUpdateEngine-0.1.0.0" installsource="ondemandupdate" ismachine="1">
+    <os version="Indy" platform="Chrome OS" sp="ForcedUpdate_armv7l"></os>
+    <app appid="{87efface-864d-49a5-9bb3-4b050a7c227a}" version="ForcedUpdate" track="developer-build" lang="en-US" board="yetu-pfla02" hardware_class="" delta_okay="true" fw_version="" ec_version="" >
+        <updatecheck targetversionprefix=""></updatecheck>
+        <event eventtype="3" eventresult="2" previousversion=""></event>
+    </app>
+</request>
