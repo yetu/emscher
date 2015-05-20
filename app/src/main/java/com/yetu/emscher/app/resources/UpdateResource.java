@@ -13,6 +13,9 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.annotation.Metered;
+import com.codahale.metrics.annotation.Timed;
 import com.yetu.emscher.app.UpdateRepository;
 import com.yetu.omaha.App;
 import com.yetu.omaha.Ping;
@@ -43,6 +46,7 @@ public class UpdateResource {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@CacheControl(noCache = true)
+	@Metered(name="update-resource")
 	public Response call(Request request) {
 		logger.debug("Received request for update endpoint");
 		// TODO check the request
