@@ -51,7 +51,6 @@ public class UpdateResource {
 		if (isUpdateRequest(request)) {
 			App updatedApp = updateRepo.getUpdateForVersion(request.getApp());
 			response.setApp(updatedApp);
-			response.setDaystart(getDaystart());
 		} else {
 			App responseApp = new App();
 			responseApp.setAppid(request.getApp().getAppid());
@@ -68,6 +67,7 @@ public class UpdateResource {
 
 			response.setApp(responseApp);
 		}
+		response.setDaystart(getDaystart());
 		return response;
 	}
 
