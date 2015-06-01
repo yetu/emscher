@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.annotation.ExceptionMetered;
 import com.codahale.metrics.annotation.Metered;
 import com.codahale.metrics.annotation.Timed;
@@ -46,14 +47,19 @@ public class UpdateResource {
 	@POST
 	@Produces(MediaType.APPLICATION_XML)
 	@CacheControl(noCache = true)
-	@Metered(name="update-resource")
+	@Metered(name = "update-resource")
 	public Response call(Request request) {
 		logger.debug("Received request for update endpoint");
 		// TODO check the request
 		Response response = new Response();
 		response.setProtocol("3.0");
 		if (isUpdateRequest(request)) {
+			logger.debug("Client with version {} looking for an update",
+					request.getApp().getVersion());
 			App updatedApp = updateRepo.getUpdateForVersion(request.getApp());
+			logger.debug(
+					"Sending update instructions to get him to version {}",
+					updatedApp.getVersion());
 			response.setApp(updatedApp);
 		} else {
 			App responseApp = new App();
