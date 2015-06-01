@@ -10,6 +10,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +30,8 @@ import com.yetu.omaha.response.Package;
 import com.yetu.omaha.response.Url;
 
 public class FileRepository implements UpdateRepository {
-	
-	public final static String VERSION_PREFIX="R39-";
+
+	public final static String VERSION_PREFIX = "R39-";
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(FileRepository.class);
@@ -166,7 +167,11 @@ public class FileRepository implements UpdateRepository {
 		File nextUpdate = null;
 		for (File f : folders) {
 			String updateVersion = f.getName();
+			logger.debug("Comparing received version {} with update folder {}",
+					currentVersion, updateVersion);
 			if (currentVersion.compareTo(updateVersion) < 0) {
+				logger.debug("Version {} seems to be newer than {}",
+						updateVersion, currentVersion);
 				nextUpdate = f;
 				break;
 			}
