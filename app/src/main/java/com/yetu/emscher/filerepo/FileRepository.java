@@ -44,8 +44,12 @@ public class FileRepository implements UpdateRepository {
 	@Override
 	public App getUpdateForVersion(App requestApp) {
 		String currentVersion = requestApp.getVersion();
-		if (!currentVersion.startsWith("R")) {
+		if (!"ForcedUpdate".equals(currentVersion)
+				&& !currentVersion.startsWith("R")) {
 			currentVersion = "R" + currentVersion;
+			logger.debug(
+					"Corrected current version, since it was missing the R, it is now {}",
+					currentVersion);
 		}
 		String board = requestApp.getBoard();
 		String track = requestApp.getTrack();
@@ -150,6 +154,7 @@ public class FileRepository implements UpdateRepository {
 
 	private File determineUpdateFolder(String currentVersion, List<File> folders) {
 		if (folders.isEmpty()) {
+			logger.warn("No update folders found!");
 			return null;
 		}
 		if ("ForcedUpdate".equals(currentVersion)) {
