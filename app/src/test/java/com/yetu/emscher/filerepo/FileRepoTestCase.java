@@ -71,7 +71,7 @@ public class FileRepoTestCase {
 		requestApp.setVersion("A");
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
-		Assert.assertEquals("R39-B-a1", updatedApp.getVersion());
+		Assert.assertEquals("B", updatedApp.getVersion());
 		Assert.assertEquals("JXq3p0Cxn2TZlfHG8A+f0eNHaD8=B", updatedApp
 				.getUpdatecheck().getManifest().getPackages().iterator().next()
 				.getHash());

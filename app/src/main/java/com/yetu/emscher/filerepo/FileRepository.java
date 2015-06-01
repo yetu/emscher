@@ -160,6 +160,8 @@ public class FileRepository implements UpdateRepository {
 
 		app.setPing(ping);
 		app.setUpdatecheck(updateCheck);
+		updatedVersion = updatedVersion.substring(VERSION_PREFIX.length(),
+				updatedVersion.length() - VERSION_SUFFIX.length());
 		app.setVersion(updatedVersion);
 
 		return app;
