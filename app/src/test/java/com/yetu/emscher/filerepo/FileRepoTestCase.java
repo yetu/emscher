@@ -27,8 +27,8 @@ public class FileRepoTestCase {
 		File boardRoot = new File(updateBasePath, BOARD);
 		File channelRoot = new File(boardRoot, CHANNEL);
 
-		File versionA = new File(channelRoot, "R39-A");
-		File versionB = new File(channelRoot, "R39-B");
+		File versionA = new File(channelRoot, "R39-A-a1");
+		File versionB = new File(channelRoot, "R39-B-a1");
 		versionA.mkdirs();
 		versionB.mkdirs();
 
@@ -71,7 +71,7 @@ public class FileRepoTestCase {
 		requestApp.setVersion("A");
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
-		Assert.assertEquals("R39-B", updatedApp.getVersion());
+		Assert.assertEquals("R39-B-a1", updatedApp.getVersion());
 		Assert.assertEquals("JXq3p0Cxn2TZlfHG8A+f0eNHaD8=B", updatedApp
 				.getUpdatecheck().getManifest().getPackages().iterator().next()
 				.getHash());

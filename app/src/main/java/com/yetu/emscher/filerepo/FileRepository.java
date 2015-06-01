@@ -32,6 +32,7 @@ import com.yetu.omaha.response.Url;
 public class FileRepository implements UpdateRepository {
 
 	public final static String VERSION_PREFIX = "R39-";
+	public final static String VERSION_SUFFIX = "-a1";
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(FileRepository.class);
@@ -47,12 +48,20 @@ public class FileRepository implements UpdateRepository {
 	@Override
 	public App getUpdateForVersion(App requestApp) {
 		String currentVersion = requestApp.getVersion();
-		if (!"ForcedUpdate".equals(currentVersion)
-				&& !currentVersion.startsWith(VERSION_PREFIX)) {
-			currentVersion = VERSION_PREFIX + currentVersion;
-			logger.debug(
-					"Corrected current version, since it was missing the R, it is now {}",
-					currentVersion);
+		if (!"ForcedUpdate".equals(currentVersion)) {
+			if (!currentVersion.startsWith(VERSION_PREFIX)) {
+				currentVersion = VERSION_PREFIX + currentVersion;
+				logger.debug(
+						"Corrected current version, since it was missing the R, it is now {}",
+						currentVersion);
+
+			}
+			if (!currentVersion.endsWith(VERSION_SUFFIX)) {
+				currentVersion = currentVersion + VERSION_SUFFIX;
+				logger.debug(
+						"Corrected current version, since it was missing the suffix, it is now {}",
+						currentVersion);
+			}
 		}
 		String board = requestApp.getBoard();
 		String track = requestApp.getTrack();
