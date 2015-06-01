@@ -14,7 +14,6 @@ import org.junit.Test;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.omaha.App;
-import com.yetu.omaha.UpdateCheck;
 
 public class FileRepoTestCase {
 
@@ -28,8 +27,8 @@ public class FileRepoTestCase {
 		File boardRoot = new File(updateBasePath, BOARD);
 		File channelRoot = new File(boardRoot, CHANNEL);
 
-		File versionA = new File(channelRoot, "RA");
-		File versionB = new File(channelRoot, "RB");
+		File versionA = new File(channelRoot, "R39-A");
+		File versionB = new File(channelRoot, "R39-B");
 		versionA.mkdirs();
 		versionB.mkdirs();
 
@@ -72,6 +71,7 @@ public class FileRepoTestCase {
 		requestApp.setVersion("A");
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
+		Assert.assertEquals("R39-B", updatedApp.getVersion());
 		Assert.assertEquals("JXq3p0Cxn2TZlfHG8A+f0eNHaD8=B", updatedApp
 				.getUpdatecheck().getManifest().getPackages().iterator().next()
 				.getHash());

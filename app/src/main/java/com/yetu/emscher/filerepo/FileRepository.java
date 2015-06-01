@@ -29,6 +29,8 @@ import com.yetu.omaha.response.Package;
 import com.yetu.omaha.response.Url;
 
 public class FileRepository implements UpdateRepository {
+	
+	public final static String VERSION_PREFIX="R39-";
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(FileRepository.class);
@@ -45,8 +47,8 @@ public class FileRepository implements UpdateRepository {
 	public App getUpdateForVersion(App requestApp) {
 		String currentVersion = requestApp.getVersion();
 		if (!"ForcedUpdate".equals(currentVersion)
-				&& !currentVersion.startsWith("R")) {
-			currentVersion = "R" + currentVersion;
+				&& !currentVersion.startsWith(VERSION_PREFIX)) {
+			currentVersion = VERSION_PREFIX + currentVersion;
 			logger.debug(
 					"Corrected current version, since it was missing the R, it is now {}",
 					currentVersion);
@@ -148,6 +150,7 @@ public class FileRepository implements UpdateRepository {
 
 		app.setPing(ping);
 		app.setUpdatecheck(updateCheck);
+		app.setVersion(updatedVersion);
 
 		return app;
 	}
