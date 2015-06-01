@@ -44,6 +44,9 @@ public class FileRepository implements UpdateRepository {
 	@Override
 	public App getUpdateForVersion(App requestApp) {
 		String currentVersion = requestApp.getVersion();
+		if (!currentVersion.startsWith("R")) {
+			currentVersion = "R" + currentVersion;
+		}
 		String board = requestApp.getBoard();
 		String track = requestApp.getTrack();
 		logger.debug(

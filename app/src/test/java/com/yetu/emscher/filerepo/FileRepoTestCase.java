@@ -28,8 +28,8 @@ public class FileRepoTestCase {
 		File boardRoot = new File(updateBasePath, BOARD);
 		File channelRoot = new File(boardRoot, CHANNEL);
 
-		File versionA = new File(channelRoot, "A");
-		File versionB = new File(channelRoot, "B");
+		File versionA = new File(channelRoot, "RA");
+		File versionB = new File(channelRoot, "RB");
 		versionA.mkdirs();
 		versionB.mkdirs();
 
