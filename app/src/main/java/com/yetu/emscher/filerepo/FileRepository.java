@@ -81,7 +81,7 @@ public class FileRepository implements UpdateRepository {
 					updatePathFile.getAbsolutePath());
 			return createNoUpdate();
 		}
-		File updateFolder = determineUpdateFolder(currentVersion,
+		File updateFolder = determineUpdateFolder(currentVersion, track,
 				getOrderedListOfUpdateFolder(Arrays.asList(updatePathFile
 						.listFiles())));
 
@@ -167,12 +167,14 @@ public class FileRepository implements UpdateRepository {
 		return app;
 	}
 
-	private File determineUpdateFolder(String currentVersion, List<File> folders) {
+	private File determineUpdateFolder(String currentVersion, String track,
+			List<File> folders) {
 		if (folders.isEmpty()) {
 			logger.warn("No update folders found!");
 			return null;
 		}
-		if ("ForcedUpdate".equals(currentVersion)) {
+		if ("ForcedUpdate".equals(currentVersion)
+				|| "developer-build".equals(track)) {
 			return folders.get(folders.size() - 1);
 		}
 		File nextUpdate = null;
