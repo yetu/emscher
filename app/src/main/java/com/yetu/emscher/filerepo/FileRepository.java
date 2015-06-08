@@ -173,9 +173,18 @@ public class FileRepository implements UpdateRepository {
 			logger.warn("No update folders found!");
 			return null;
 		}
-		if ("ForcedUpdate".equals(currentVersion)
-				|| "developer-build".equals(track)) {
+		if ("ForcedUpdate".equals(currentVersion)) {
 			return folders.get(folders.size() - 1);
+		}
+
+		if ("developer-build".equals(track)) {
+			if (isLatestVersionNewerThanReceivedVersion(currentVersion,
+					folders.get(folders.size() - 1))) {
+				return folders.get(folders.size() - 1);
+			} else {
+				return null;
+			}
+
 		}
 		File nextUpdate = null;
 		for (File f : folders) {
@@ -190,6 +199,12 @@ public class FileRepository implements UpdateRepository {
 			}
 		}
 		return nextUpdate;
+	}
+
+	private boolean isLatestVersionNewerThanReceivedVersion(
+			String receivedVersion, File updateFolder) {
+		String updateVersion = updateFolder.getName();
+		return updateVersion.compareTo(receivedVersion) > 0;
 	}
 
 	private List<File> getOrderedListOfUpdateFolder(Collection<File> objects) {
