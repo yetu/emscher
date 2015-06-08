@@ -55,7 +55,7 @@ public class FileRepoTestCase {
 		requestApp.setTrack(CHANNEL);
 		requestApp.setVersion("C");
 		App updatedApp = repo.getUpdateForVersion(requestApp);
-		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
+		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
 	}
 
 	@Test
