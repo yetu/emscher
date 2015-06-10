@@ -44,11 +44,12 @@ public class MantaRepoModule {
 			MantaConfig config, ObjectMapper mapper) {
 		return new MantaRepo(client, config, mapper);
 	}
-	
+
 	@Provides
 	@Named("repo")
-	public HealthCheck provideRepoHealthCheck(MantaConfig config) {
-		return new MantaHealthCheck(config);
+	public HealthCheck provideRepoHealthCheck(MantaClient client,
+			MantaConfig config) {
+		return new MantaHealthCheck(client, config);
 	}
 
 }
