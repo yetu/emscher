@@ -1,7 +1,12 @@
-repo: file
+repo: manta
 file:
   basePath: "file:///Users/till/updates"
   baseUrl: "http://192.168.1.224:8080/static"
+
+manta:
+  url: "https://us-east.manta.joyent.com/yetu/public/gateway/updates"
+  login: yetu
+  updateBasePath: "/public/gateway/updates"
 
 assets:
   overrides:
