@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,10 +14,13 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import com.yetu.emscher.Metadata;
 import com.yetu.emscher.Utils;
+import com.yetu.emscher.app.UpdateRepository;
 import com.yetu.emscher.app.config.MantaConfig;
-import com.yetu.emscher.repo.AbstractPathBasedRepo;
 import com.yetu.manta.client.MantaClient;
 import com.yetu.manta.client.representations.MantaObject;
 import com.yetu.omaha.App;
@@ -26,7 +31,13 @@ import com.yetu.omaha.response.Manifest;
 import com.yetu.omaha.response.Package;
 import com.yetu.omaha.response.Url;
 
-public class MantaRepo extends AbstractPathBasedRepo {
+public class MantaRepo extends CacheLoader<String, App> implements
+		UpdateRepository {
+
+	public final static String VERSION_PREFIX = "R39-";
+	public final static String VERSION_SUFFIX = "-a1";
+
+	public final static String CHROMEOS_APP_ID = "{87efface-864d-49a5-9bb3-4b050a7c227a}";
 
 	private final static Logger logger = LoggerFactory
 			.getLogger(MantaRepo.class);
@@ -36,20 +47,20 @@ public class MantaRepo extends AbstractPathBasedRepo {
 
 	private ObjectMapper jsonMapper;
 
+	private LoadingCache<String, App> updateCache;
+
 	public MantaRepo(MantaClient client, MantaConfig config,
 			ObjectMapper jsonMapper) {
 		this.mantaClient = client;
 		this.mantaConfig = config;
 		this.jsonMapper = jsonMapper;
+
+		updateCache = CacheBuilder.newBuilder()
+				.expireAfterWrite(2, TimeUnit.HOURS).maximumSize(10)
+				.build(this);
 	}
 
-	@Override
-	public App getUpdateForVersion(App requestApp) {
-		String currentVersion = requestApp.getVersion();
-		currentVersion = cleanReceivedVersion(currentVersion);
-		String board = requestApp.getBoard();
-		String track = requestApp.getTrack();
-
+	private App getUpdateInfo(String currentVersion, String board, String track) {
 		String boardSpecificPath = Utils.concatUrl(
 				mantaConfig.getUpdateBasePath(), board, track);
 
@@ -77,7 +88,7 @@ public class MantaRepo extends AbstractPathBasedRepo {
 				logger.debug("Returning update response");
 				try {
 					return createUpdateResponse(nextUpdate.getName(),
-							updatePath, requestApp, mantaConfig.getUrl(),
+							updatePath, mantaConfig.getUrl(),
 							mantaConfig.getUpdateBasePath());
 				} catch (IOException e) {
 					logger.error(
@@ -92,11 +103,31 @@ public class MantaRepo extends AbstractPathBasedRepo {
 		return createNoUpdate();
 	}
 
+	@Override
+	public App getUpdateForVersion(App requestApp) {
+		String currentVersion = requestApp.getVersion();
+		currentVersion = cleanReceivedVersion(currentVersion);
+		String board = requestApp.getBoard();
+		String track = requestApp.getTrack();
+
+		try {
+			App update = updateCache.get(currentVersion + "/" + board + "/"
+					+ track);
+			if (update != null) {
+				return update;
+			}
+		} catch (ExecutionException e) {
+			logger.error("Exception while trying to get update from cache", e);
+		}
+
+		return createNoUpdate();
+	}
+
 	private App createUpdateResponse(String updatedVerison, String updatePath,
-			App requestApp, String baseUrl, String basePath)
-			throws JsonParseException, JsonMappingException, IOException {
+			String baseUrl, String basePath) throws JsonParseException,
+			JsonMappingException, IOException {
 		App app = new App();
-		app.setAppid(requestApp.getAppid());
+		app.setAppid(CHROMEOS_APP_ID);
 		app.setStatus("ok");
 
 		Ping ping = new Ping();
@@ -184,6 +215,51 @@ public class MantaRepo extends AbstractPathBasedRepo {
 				.sorted(new MantaObjectComparator())
 				.collect(Collectors.toList());
 		return folders;
+	}
+
+	protected String removeBasePathFromUpdatePath(String absoluteUpdatePath,
+			String absoluteBasePath) {
+		return absoluteUpdatePath.substring(absoluteBasePath.length());
+	}
+
+	protected boolean isLatestVersionNewerThanReceivedVersion(
+			String receivedVersion, String updateFolder) {
+		return updateFolder.compareTo(receivedVersion) > 0;
+	}
+
+	protected String cleanReceivedVersion(String receivedVersion) {
+		if (!"ForcedUpdate".equals(receivedVersion)) {
+			if (!receivedVersion.startsWith(VERSION_PREFIX)) {
+				receivedVersion = VERSION_PREFIX + receivedVersion;
+
+			}
+			if (!receivedVersion.endsWith(VERSION_SUFFIX)) {
+				receivedVersion = receivedVersion + VERSION_SUFFIX;
+			}
+		}
+		return receivedVersion;
+	}
+
+	protected App createNoUpdate() {
+		App app = new App();
+		app.setStatus("ok");
+		UpdateCheck check = new UpdateCheck();
+		check.setStatus("noupdate");
+		app.setUpdatecheck(check);
+		Ping ping = new Ping();
+		ping.setStatus("ok");
+		app.setPing(ping);
+		return app;
+	}
+
+	@Override
+	public App load(String key) throws Exception {
+		String[] keyParts = key.split("/");
+		if (keyParts.length != 3) {
+			throw new IllegalArgumentException(
+					"The key does not match expectations. Given key: " + key);
+		}
+		return getUpdateInfo(keyParts[0], keyParts[1], keyParts[2]);
 	}
 
 }
