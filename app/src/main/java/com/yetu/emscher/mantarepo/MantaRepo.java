@@ -49,34 +49,44 @@ public class MantaRepo extends AbstractPathBasedRepo {
 		currentVersion = cleanReceivedVersion(currentVersion);
 		String board = requestApp.getBoard();
 		String track = requestApp.getTrack();
-		String boardSpecificPath = mantaConfig.getUpdateBasePath() + "/"
-				+ board + "/" + track;
 
-		List<MantaObject> updates = getOrderedListOfUpdateFolder(mantaClient
-				.listMantaObjects(boardSpecificPath));
+		String boardSpecificPath = Utils.concatUrl(
+				mantaConfig.getUpdateBasePath(), board, track);
 
-		MantaObject nextUpdate = determineUpdateFolder(currentVersion, track,
-				updates);
-		if (nextUpdate == null) {
-			logger.debug("Didn't found a suitable update, returning no update response");
-			return createNoUpdate();
-		} else {
-			String updatePath = Utils.concatUrl(boardSpecificPath,
-					nextUpdate.getName());
-			String updatePayloadPath = Utils.concatUrl(boardSpecificPath,
-					nextUpdate.getName(), "update.gz");
-			String metadataPath = Utils.concatUrl(boardSpecificPath,
-					nextUpdate.getName(), "update.meta");
-			//FIXME validate these file paths
-			logger.debug("Returning update response");
-			try {
-				return createUpdateResponse(nextUpdate.getName(), updatePath,
-						requestApp, mantaConfig.getUrl(),
-						mantaConfig.getUpdateBasePath());
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+		try {
+			logger.debug("Listing updates in manta path {}", boardSpecificPath);
+			List<MantaObject> updates = getOrderedListOfUpdateFolder(mantaClient
+					.listMantaObjects(boardSpecificPath));
+			logger.debug("Found {} update folders", updates.size());
+
+			MantaObject nextUpdate = determineUpdateFolder(currentVersion,
+					track, updates);
+			if (nextUpdate == null) {
+				logger.debug("Didn't found a suitable update, returning no update response");
+				return createNoUpdate();
+			} else {
+				logger.debug("Next update is {}", nextUpdate.getName());
+				String updatePath = Utils.concatUrl(boardSpecificPath,
+						nextUpdate.getName());
+				logger.debug("Update path is {}", updatePath);
+				String updatePayloadPath = Utils.concatUrl(updatePath,
+						"update.gz");
+				String metadataPath = Utils
+						.concatUrl(updatePath, "update.meta");
+				// FIXME validate these file paths
+				logger.debug("Returning update response");
+				try {
+					return createUpdateResponse(nextUpdate.getName(),
+							updatePath, requestApp, mantaConfig.getUrl(),
+							mantaConfig.getUpdateBasePath());
+				} catch (IOException e) {
+					logger.error(
+							"Something failed when creating the update response",
+							e);
+				}
 			}
+		} catch (retrofit.RetrofitError error) {
+			logger.error("Not possible to access manta", error);
 		}
 
 		return createNoUpdate();
