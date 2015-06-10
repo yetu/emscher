@@ -2,17 +2,21 @@ package com.yetu.emscher.mantarepo;
 
 import java.io.IOException;
 
+import javax.inject.Named;
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.codahale.metrics.health.HealthCheck;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetu.emscher.app.EmscherApp;
 import com.yetu.emscher.app.EmscherModule;
 import com.yetu.emscher.app.UpdateRepository;
+import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.emscher.app.config.MantaConfig;
 import com.yetu.emscher.app.resources.UpdateResource;
+import com.yetu.emscher.filerepo.FileSystemHealthCheck;
 import com.yetu.manta.client.MantaClient;
 
 import dagger.Module;
@@ -39,6 +43,12 @@ public class MantaRepoModule {
 	public UpdateRepository provideUpdateRepository(MantaClient client,
 			MantaConfig config, ObjectMapper mapper) {
 		return new MantaRepo(client, config, mapper);
+	}
+	
+	@Provides
+	@Named("repo")
+	public HealthCheck provideRepoHealthCheck(MantaConfig config) {
+		return new MantaHealthCheck(config);
 	}
 
 }
