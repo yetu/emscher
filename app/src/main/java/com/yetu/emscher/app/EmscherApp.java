@@ -16,6 +16,7 @@ import com.yetu.emscher.app.resources.UpdateEngineRequestFilter;
 import com.yetu.emscher.app.resources.UpdateResource;
 import com.yetu.emscher.fakerepo.FakeModule;
 import com.yetu.emscher.filerepo.FileRepoModule;
+import com.yetu.emscher.mantarepo.MantaRepoModule;
 import com.yunspace.dropwizard.xml.XmlBundle;
 
 import dagger.ObjectGraph;
@@ -69,6 +70,8 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 			updateModule = new FakeModule();
 		} else if ("file".equals(config.getRepo())) {
 			updateModule = new FileRepoModule();
+		} else if ("manta".equals(config.getRepo())) {
+			updateModule = new MantaRepoModule();
 		}
 		return ObjectGraph.create(new EmscherModule(config)).plus(updateModule);
 	}

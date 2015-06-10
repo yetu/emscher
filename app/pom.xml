@@ -43,6 +43,11 @@
 		</dependency>
 
 		<dependency>
+			<groupId>com.yetu.manta</groupId>
+			<artifactId>client</artifactId>
+		</dependency>
+
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>

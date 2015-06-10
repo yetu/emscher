@@ -52,6 +52,12 @@
 			</dependency>
 
 			<dependency>
+				<groupId>com.yetu.manta</groupId>
+				<artifactId>client</artifactId>
+				<version>0.1.0</version>
+			</dependency>
+
+			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
 				<version>4.12</version>
@@ -80,6 +86,14 @@
 		<repository>
 			<id>jcenter</id>
 			<url>http://jcenter.bintray.com</url>
+		</repository>
+		<repository>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+			<id>bintray-yetu-maven</id>
+			<name>bintray</name>
+			<url>http://dl.bintray.com/yetu/maven</url>
 		</repository>
 	</repositories>
 </project>
