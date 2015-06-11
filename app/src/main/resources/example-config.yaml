@@ -29,14 +29,11 @@ logging:
 
   # Logger-specific levels.
   loggers:
-
-    # Sets the level for 'com.example.app' to DEBUG.
     com.yetu.emscher: DEBUG
-
-    org.hibernate.SQL: ALL
 
   appenders:
     - type: console
+      threshold: DEBUG
     - type: file
       threshold: DEBUG
       logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
@@ -44,4 +41,3 @@ logging:
       archivedLogFilenamePattern: /tmp/application-%d{yyyy-MM-dd}-%i.log.gz
       archivedFileCount: 7
       timeZone: UTC
-      #maxFileSize: 10MB
