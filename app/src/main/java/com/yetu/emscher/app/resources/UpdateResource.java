@@ -13,10 +13,10 @@ import javax.ws.rs.core.MediaType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.annotation.ExceptionMetered;
+import com.codahale.metrics.Counter;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.annotation.Metered;
-import com.codahale.metrics.annotation.Timed;
 import com.yetu.emscher.app.UpdateRepository;
 import com.yetu.omaha.App;
 import com.yetu.omaha.Ping;
@@ -33,9 +33,22 @@ public class UpdateResource {
 
 	UpdateRepository updateRepo;
 
+	MetricRegistry metricRegistry;
+
+	private Counter errorCounter;
+	private Histogram errorHistogram;
+	private Histogram errorEventTypeHistogram;
+
 	@Inject
-	public UpdateResource(UpdateRepository updateRepo) {
+	public UpdateResource(MetricRegistry metricRegistry,
+			UpdateRepository updateRepo) {
 		this.updateRepo = updateRepo;
+		this.metricRegistry = metricRegistry;
+		errorCounter = metricRegistry.counter("event-error-count");
+		errorHistogram = metricRegistry
+				.histogram("event-error-code-distribution");
+		errorEventTypeHistogram = metricRegistry
+				.histogram("event-type-error-distribution");
 		if (updateRepo == null) {
 			logger.error("DI didn't work as expected");
 		} else {
@@ -51,6 +64,7 @@ public class UpdateResource {
 	public Response call(Request request) {
 		logger.debug("Received request for update endpoint");
 		// TODO check the request
+
 		Response response = new Response();
 		response.setProtocol("3.0");
 		if (isUpdateRequest(request)) {
@@ -62,6 +76,7 @@ public class UpdateResource {
 					updatedApp.getVersion());
 			response.setApp(updatedApp);
 		} else {
+			handleEvent(request.getApp().getEvent());
 			App responseApp = new App();
 			responseApp.setAppid(request.getApp().getAppid());
 			responseApp.setStatus("ok");
@@ -79,6 +94,22 @@ public class UpdateResource {
 		}
 		response.setDaystart(getDaystart());
 		return response;
+	}
+
+	private void handleEvent(Event event) {
+		if (event != null) {
+			if (event.getEventtype() == 0) {
+				logger.warn("We received an unknown event type!!!");
+			}
+			if (event.getEventresult() == 0) {
+				logger.warn(
+						"We received an error from an client for event type {}, error code",
+						event.getEventtype(), event.getErrorcode());
+				errorCounter.inc();
+				errorHistogram.update(event.getErrorcode());
+				errorEventTypeHistogram.update(event.getEventtype());
+			}
+		}
 	}
 
 	private boolean isUpdateRequest(Request request) {

@@ -50,7 +50,7 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 	public void run(EmscherConfiguration configuration, Environment environment)
 			throws Exception {
 		this.environment = environment;
-		objectGraph = getObjectGraph(configuration);
+		objectGraph = getObjectGraph(environment, configuration);
 		objectGraph.inject(this);
 
 		environment.healthChecks().register("repo", repoHealthCheck);
@@ -64,7 +64,8 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 		environment.jersey().register(objectGraph.get(resourceClass));
 	}
 
-	private ObjectGraph getObjectGraph(EmscherConfiguration config) {
+	private ObjectGraph getObjectGraph(Environment env,
+			EmscherConfiguration config) {
 		Object updateModule = null;
 		if ("fake".equals(config.getRepo())) {
 			updateModule = new FakeModule();
@@ -73,7 +74,8 @@ public class EmscherApp extends Application<EmscherConfiguration> {
 		} else if ("manta".equals(config.getRepo())) {
 			updateModule = new MantaRepoModule();
 		}
-		return ObjectGraph.create(new EmscherModule(config)).plus(updateModule);
+		return ObjectGraph.create(new EmscherModule(env, config)).plus(
+				updateModule);
 	}
 
 }
