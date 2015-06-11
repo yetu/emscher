@@ -8,6 +8,7 @@ import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
@@ -28,6 +29,11 @@ public class UpdateResourceTestCase {
 		@Provides
 		public UpdateRepository provideUpdateRepo() {
 			return new FakeUpdateRepo();
+		}
+
+		@Provides
+		public MetricRegistry provideMetricRegistry() {
+			return new MetricRegistry();
 		}
 	}
 
