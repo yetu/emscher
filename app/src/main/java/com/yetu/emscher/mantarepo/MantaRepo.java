@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import retrofit.RetrofitError;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -80,10 +82,49 @@ public class MantaRepo extends CacheLoader<String, App> implements
 				String updatePath = Utils.concatUrl(boardSpecificPath,
 						nextUpdate.getName());
 				logger.debug("Update path is {}", updatePath);
-				String updatePayloadPath = Utils.concatUrl(updatePath,
-						"update.gz");
-				String metadataPath = Utils
-						.concatUrl(updatePath, "update.meta");
+				try {
+					Collection<MantaObject> updateFiles = mantaClient
+							.listMantaObjects(updatePath);
+					if (updateFiles.size() < 2) {
+						logger.error(
+								"For update {} were not all necessary files present",
+								nextUpdate.getName());
+					}
+					if (updateFiles.size() > 2) {
+						logger.warn(
+								"We had more files than necessary in the folder for update {}",
+								nextUpdate.getName());
+					}
+					boolean metadataFound = false;
+					boolean payloadFound = false;
+					for (MantaObject m : updateFiles) {
+						if ("update.gz".equals(m.getName())) {
+							payloadFound = true;
+						}
+						if ("update.meta".equals(m.getName())) {
+							metadataFound = true;
+						}
+					}
+					if (!metadataFound) {
+						logger.error(
+								"We didn't found the update metadata for update {}",
+								nextUpdate.getName());
+					}
+					if (!payloadFound) {
+						logger.error(
+								"We didn't found the payload file for update {}",
+								nextUpdate.getName());
+					}
+					if (!payloadFound || !metadataFound) {
+						return createNoUpdate();
+					}
+					// TODO get the object via mantaClient and check it
+				} catch (RetrofitError error) {
+					logger.error(
+							"Can't access payload or metadata for update {}",
+							nextUpdate.getName(), error);
+					return createNoUpdate();
+				}
 				// FIXME validate these file paths
 				logger.debug("Returning update response");
 				try {
@@ -211,7 +252,7 @@ public class MantaRepo extends CacheLoader<String, App> implements
 	private List<MantaObject> getOrderedListOfUpdateFolder(
 			Collection<MantaObject> objects) {
 		List<MantaObject> folders = objects.stream()
-				.filter(o -> o.isDirectory())
+				.filter(o -> o.isDirectory() && !o.getName().startsWith("disabled"))
 				.sorted(new MantaObjectComparator())
 				.collect(Collectors.toList());
 		return folders;
