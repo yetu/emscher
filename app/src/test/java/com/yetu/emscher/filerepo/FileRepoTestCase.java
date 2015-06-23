@@ -93,6 +93,24 @@ public class FileRepoTestCase {
 		Assert.assertEquals("sha1#C", updatedApp.getUpdatecheck().getManifest()
 				.getPackages().iterator().next().getHash());
 	}
+	
+	@Test
+	public void testNonDeveloperUpdates() throws Exception {
+		FileRepoConfig config = new FileRepoConfig();
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
+		config.setBaseUrl("http://updates.yetu.me/gateway/static");
+
+		FileRepository repo = new FileRepository(config, new ObjectMapper());
+		App requestApp = new App();
+		requestApp.setBoard("yetu-pfla02");
+		requestApp.setTrack("npower-pilot");
+		requestApp.setVersion("A");
+		App updatedApp = repo.getUpdateForVersion(requestApp);
+		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
+		Assert.assertEquals("B", updatedApp.getVersion());
+		Assert.assertEquals("sha1#B", updatedApp.getUpdatecheck().getManifest()
+				.getPackages().iterator().next().getHash());
+	}
 
 	@AfterClass
 	public static void cleanup() throws Exception {
