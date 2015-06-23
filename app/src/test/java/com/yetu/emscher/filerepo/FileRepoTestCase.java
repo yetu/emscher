@@ -3,8 +3,10 @@ package com.yetu.emscher.filerepo;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -41,8 +43,8 @@ public class FileRepoTestCase {
 		File channelRoot = new File(boardRoot, channel);
 		File versionRoot = new File(channelRoot, "R39-" + versionname + "-a1");
 		versionRoot.mkdirs();
-		//Files.copy(Paths.get("src/test/resources/update.meta.a"),
-		//		Paths.get(versionRoot.getAbsolutePath(), "update.meta"));
+		// Files.copy(Paths.get("src/test/resources/update.meta.a"),
+		// Paths.get(versionRoot.getAbsolutePath(), "update.meta"));
 
 		Metadata metadata = new Metadata();
 		metadata.setDelta(false);
@@ -93,7 +95,7 @@ public class FileRepoTestCase {
 		Assert.assertEquals("sha1#C", updatedApp.getUpdatecheck().getManifest()
 				.getPackages().iterator().next().getHash());
 	}
-	
+
 	@Test
 	public void testNonDeveloperUpdates() throws Exception {
 		FileRepoConfig config = new FileRepoConfig();
@@ -110,6 +112,26 @@ public class FileRepoTestCase {
 		Assert.assertEquals("B", updatedApp.getVersion());
 		Assert.assertEquals("sha1#B", updatedApp.getUpdatecheck().getManifest()
 				.getPackages().iterator().next().getHash());
+	}
+
+	@Test
+	public void testDisabledUpdates() throws Exception {
+		Files.move(Paths.get(UPDATE_BASE_PATH, "yetu-pfla02", "npower-pilot",
+				"R39-C-a1"), Paths.get(UPDATE_BASE_PATH, "yetu-pfla02",
+				"npower-pilot", "disabled_R39-C-a1"),
+				StandardCopyOption.ATOMIC_MOVE);
+
+		FileRepoConfig config = new FileRepoConfig();
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
+		config.setBaseUrl("http://updates.yetu.me/gateway/static");
+
+		FileRepository repo = new FileRepository(config, new ObjectMapper());
+		App requestApp = new App();
+		requestApp.setBoard("yetu-pfla02");
+		requestApp.setTrack("npower-pilot");
+		requestApp.setVersion("B");
+		App updatedApp = repo.getUpdateForVersion(requestApp);
+		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
 	}
 
 	@AfterClass
