@@ -10,16 +10,22 @@ public class Utils {
 	 */
 	public static String concatUrl(String... parts) {
 		StringBuilder builder = new StringBuilder();
+		int counter = 0;
+		int length = parts.length;
 		for (String s : parts) {
 			String part = s;
-			if (s.startsWith("/")) {
-				part = s.substring(1);
+			if (counter != 0) {
+				if (s.startsWith("/")) {
+					part = s.substring(1);
+				}
 			}
 			builder.append(part);
-			if (!part.endsWith("/")) {
-				builder.append('/');
+			if (counter != length - 1) {
+				if (!part.endsWith("/")) {
+					builder.append('/');
+				}
 			}
-
+			counter++;
 		}
 		return builder.toString();
 	}

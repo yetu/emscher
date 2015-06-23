@@ -12,6 +12,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.yetu.emscher.Metadata;
 import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.omaha.App;
 
@@ -23,30 +24,47 @@ public class FileRepoTestCase {
 
 	@BeforeClass
 	public static void prepareTestPaths() throws Exception {
+
+		createValidUpdateFolder(CHANNEL, "A");
+		createValidUpdateFolder(CHANNEL, "B");
+		createValidUpdateFolder(CHANNEL, "C");
+
+		createValidUpdateFolder("npower-pilot", "A");
+		createValidUpdateFolder("npower-pilot", "B");
+		createValidUpdateFolder("npower-pilot", "C");
+	}
+
+	private static void createValidUpdateFolder(String channel,
+			String versionname) throws IOException {
 		File updateBasePath = new File(UPDATE_BASE_PATH);
 		File boardRoot = new File(updateBasePath, BOARD);
-		File channelRoot = new File(boardRoot, CHANNEL);
+		File channelRoot = new File(boardRoot, channel);
+		File versionRoot = new File(channelRoot, "R39-" + versionname + "-a1");
+		versionRoot.mkdirs();
+		//Files.copy(Paths.get("src/test/resources/update.meta.a"),
+		//		Paths.get(versionRoot.getAbsolutePath(), "update.meta"));
 
-		File versionA = new File(channelRoot, "R39-A-a1");
-		File versionB = new File(channelRoot, "R39-B-a1");
-		versionA.mkdirs();
-		versionB.mkdirs();
+		Metadata metadata = new Metadata();
+		metadata.setDelta(false);
+		metadata.setMetadataHash("hash#" + versionname);
+		metadata.setMetadataSize(23);
+		metadata.setSha1("sha1#" + versionname);
+		metadata.setSha256("sha256#" + versionname);
+		metadata.setSize(42);
 
-		Files.copy(Paths.get("src/test/resources/update.meta.a"),
-				Paths.get(versionA.getAbsolutePath(), "update.meta"));
-		Files.copy(Paths.get("src/test/resources/update.meta.b"),
-				Paths.get(versionB.getAbsolutePath(), "update.meta"));
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.writeValue(new File(versionRoot, "update.meta"), metadata);
 
-		File payloadA = new File(versionA, "update.gz");
-		File payloadB = new File(versionB, "update.gz");
-		payloadA.createNewFile();
-		payloadB.createNewFile();
+		Files.copy(Paths.get("src/test/resources/metadata_hash"),
+				Paths.get(versionRoot.getAbsolutePath(), "metadata_hash"));
+		File payload = new File(versionRoot, "update.gz");
+		payload.createNewFile();
 	}
 
 	@Test
 	public void testNoAvailableUpdate() throws Exception {
 		FileRepoConfig config = new FileRepoConfig();
-		config.setBasePath(new File(UPDATE_BASE_PATH).toURI().toString());
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
 		config.setBaseUrl("http://updates.yetu.me/gateway/static");
 
 		FileRepository repo = new FileRepository(config, new ObjectMapper());
@@ -59,9 +77,9 @@ public class FileRepoTestCase {
 	}
 
 	@Test
-	public void testUpdateFromVersionAtoB() throws Exception {
+	public void testUpdateFromVersionA() throws Exception {
 		FileRepoConfig config = new FileRepoConfig();
-		config.setBasePath(new File(UPDATE_BASE_PATH).toURI().toString());
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
 		config.setBaseUrl("http://updates.yetu.me/gateway/static");
 
 		FileRepository repo = new FileRepository(config, new ObjectMapper());
@@ -71,10 +89,9 @@ public class FileRepoTestCase {
 		requestApp.setVersion("A");
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
-		Assert.assertEquals("B", updatedApp.getVersion());
-		Assert.assertEquals("JXq3p0Cxn2TZlfHG8A+f0eNHaD8=B", updatedApp
-				.getUpdatecheck().getManifest().getPackages().iterator().next()
-				.getHash());
+		Assert.assertEquals("C", updatedApp.getVersion());
+		Assert.assertEquals("sha1#C", updatedApp.getUpdatecheck().getManifest()
+				.getPackages().iterator().next().getHash());
 	}
 
 	@AfterClass

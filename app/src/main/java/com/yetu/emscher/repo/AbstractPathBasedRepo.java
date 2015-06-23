@@ -91,8 +91,13 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 
 		try {
 			logger.debug("Listing updates in manta path {}", boardSpecificPath);
-			List<Path> updates = getOrderedListOfUpdateFolder(getPath(
-					boardSpecificPath).list());
+			Path updateFolderPath = getPath(boardSpecificPath);
+			if (!updateFolderPath.isDirectory()) {
+				logger.error("{} is not a directory", boardSpecificPath);
+				//return createNoUpdate();
+			}
+			Collection<Path> updateFolders = getPath(boardSpecificPath).list();
+			List<Path> updates = getOrderedListOfUpdateFolder(updateFolders);
 			logger.debug("Found {} update folders", updates.size());
 
 			Path nextUpdate = determineUpdateFolder(currentVersion, track,
