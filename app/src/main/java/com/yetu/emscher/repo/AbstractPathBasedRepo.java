@@ -94,7 +94,7 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 			Path updateFolderPath = getPath(boardSpecificPath);
 			if (!updateFolderPath.isDirectory()) {
 				logger.error("{} is not a directory", boardSpecificPath);
-				//return createNoUpdate();
+				// return createNoUpdate();
 			}
 			Collection<Path> updateFolders = getPath(boardSpecificPath).list();
 			List<Path> updates = getOrderedListOfUpdateFolder(updateFolders);
@@ -190,8 +190,12 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 
 		UpdateCheck updateCheck = new UpdateCheck();
 		updateCheck.setStatus("ok");
-		updateCheck.addUrl(new Url(Utils.concatUrl(baseUrl,
-				removeBasePathFromUpdatePath(updatePath, basePath))));
+		String codebaseUrl = Utils.concatUrl(baseUrl,
+				removeBasePathFromUpdatePath(updatePath, basePath));
+		if (!codebaseUrl.endsWith("/")) {
+			codebaseUrl = codebaseUrl + "/";
+		}
+		updateCheck.addUrl(new Url(codebaseUrl));
 
 		logger.debug("Current update path in createUpdateResponse is {}",
 				updatePath);

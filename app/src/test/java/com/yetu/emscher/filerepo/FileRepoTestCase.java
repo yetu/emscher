@@ -43,8 +43,6 @@ public class FileRepoTestCase {
 		File channelRoot = new File(boardRoot, channel);
 		File versionRoot = new File(channelRoot, "R39-" + versionname + "-a1");
 		versionRoot.mkdirs();
-		// Files.copy(Paths.get("src/test/resources/update.meta.a"),
-		// Paths.get(versionRoot.getAbsolutePath(), "update.meta"));
 
 		Metadata metadata = new Metadata();
 		metadata.setDelta(false);
@@ -110,6 +108,7 @@ public class FileRepoTestCase {
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
 		Assert.assertEquals("B", updatedApp.getVersion());
+		Assert.assertTrue(updatedApp.getUpdatecheck().getUrls().iterator().next().getCodebase().endsWith("/"));
 		Assert.assertEquals("sha1#B", updatedApp.getUpdatecheck().getManifest()
 				.getPackages().iterator().next().getHash());
 	}
