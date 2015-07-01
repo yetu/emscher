@@ -50,4 +50,14 @@ public class MantaPath implements Path {
 		return object.isDirectory();
 	}
 
+	@Override
+	public String getAbsolutePath() {
+		return fullPath;
+	}
+
+	@Override
+	public boolean exists() {
+		return true;
+	}
+
 }

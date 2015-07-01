@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yetu.emscher.Metadata;
+import com.yetu.emscher.Utils;
 import com.yetu.emscher.app.config.FileRepoConfig;
 import com.yetu.omaha.App;
 
@@ -115,11 +116,6 @@ public class FileRepoTestCase {
 
 	@Test
 	public void testDisabledUpdates() throws Exception {
-		Files.move(Paths.get(UPDATE_BASE_PATH, "yetu-pfla02", "npower-pilot",
-				"R39-C-a1"), Paths.get(UPDATE_BASE_PATH, "yetu-pfla02",
-				"npower-pilot", "disabled_R39-C-a1"),
-				StandardCopyOption.ATOMIC_MOVE);
-
 		FileRepoConfig config = new FileRepoConfig();
 		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
 		config.setBaseUrl("http://updates.yetu.me/gateway/static");
@@ -129,7 +125,22 @@ public class FileRepoTestCase {
 		requestApp.setBoard("yetu-pfla02");
 		requestApp.setTrack("npower-pilot");
 		requestApp.setVersion("B");
+		
+		//Test disable via disable file
+		File disableFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,"yetu-pfla02", "npower-pilot",
+				"R39-C-a1",".disable"));
+		disableFile.createNewFile();
+		
 		App updatedApp = repo.getUpdateForVersion(requestApp);
+		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
+		
+		//Test disable via folder name
+		Files.move(Paths.get(UPDATE_BASE_PATH, "yetu-pfla02", "npower-pilot",
+				"R39-C-a1"), Paths.get(UPDATE_BASE_PATH, "yetu-pfla02",
+				"npower-pilot", "disabled_R39-C-a1"),
+				StandardCopyOption.ATOMIC_MOVE);
+
+		updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
 	}
 

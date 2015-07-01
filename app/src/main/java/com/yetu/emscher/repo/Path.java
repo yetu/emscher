@@ -13,5 +13,9 @@ public interface Path {
 	public InputStream getContent() throws IOException;
 
 	public boolean isDirectory();
+	
+	public String getAbsolutePath();
+	
+	public boolean exists();
 
 }

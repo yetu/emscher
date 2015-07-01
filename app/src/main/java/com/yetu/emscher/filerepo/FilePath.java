@@ -52,4 +52,14 @@ public class FilePath implements Path {
 		return file.isDirectory();
 	}
 
+	@Override
+	public String getAbsolutePath() {
+		return file.getAbsolutePath();
+	}
+
+	@Override
+	public boolean exists() {
+		return file.exists();
+	}
+
 }

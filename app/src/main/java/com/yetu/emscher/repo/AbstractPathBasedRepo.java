@@ -260,10 +260,21 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 			logger.debug("Comparing received version {} with update folder {}",
 					currentVersion, updateVersion);
 			if (currentVersion.compareTo(updateVersion) < 0) {
+				boolean disabled = false;
+				try {
+					Path disabledFile = getPath(Utils.concatUrl(
+							p.getAbsolutePath(), ".disabled"));
+					disabled = disabledFile.exists();
+				} catch (Exception e) {
+					disabled = false;
+					logger.info("Update {} is disabled", p.getName());
+				}
 				logger.debug("Version {} seems to be newer than {}",
 						updateVersion, currentVersion);
-				nextUpdate = p;
-				break;
+				if (!disabled) {
+					nextUpdate = p;
+					break;
+				}
 			}
 		}
 		return nextUpdate;
