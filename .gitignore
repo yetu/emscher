@@ -1,3 +1,5 @@
 *.class
 bin/
 target/
+release.properties
+app/dependency-reduced-pom.xml
