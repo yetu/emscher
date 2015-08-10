@@ -1,0 +1,43 @@
+repo: manta
+file:
+  basePath: "file:///var/lib/updates/gateway/updates"
+  baseUrl: "https://us-east.manta.joyent.com/yetu/public/gateway/updates/"
+
+manta:
+  url: "https://us-east.manta.joyent.com/yetu/public/gateway/updates"
+  login: "yetu"
+  updateBasePath:  "/public/gateway/updates"
+
+assets:
+  overrides:
+    /static: 'src/resources/assets'
+
+server:
+  applicationContextPath: /gateway-dev
+  type: default
+  applicationConnectors:
+    - type: http
+      port: 80
+  adminConnectors:
+    - type: http
+      port: 8081
+
+logging:
+
+  # The default level of all loggers. Can be OFF, ERROR, WARN, INFO, DEBUG, TRACE, or ALL.
+  level: WARN
+
+  # Logger-specific levels.
+  loggers:
+    com.yetu.emscher: DEBUG
+
+  appenders:
+    - type: file
+      threshold: DEBUG
+      logFormat: "%-6level [%d{HH:mm:ss.SSS}] [%t] %logger{5} - %X{code} %msg %n"
+      currentLogFilename: /srv/emscher/log/emscher.log
+      archivedLogFilenamePattern: /srv/emscher/log/emscher-%d{yyyy-MM-dd}-%i.log.gz
+      archivedFileCount: 7
+      timeZone: UTC
+    - type: console
+      threshold: WARN
