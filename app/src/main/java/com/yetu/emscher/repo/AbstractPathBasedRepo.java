@@ -118,7 +118,7 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 								nextUpdate.getName());
 						return createNoUpdate();
 					}
-					if (updateFiles.size() > 3) {
+					if (updateFiles.size() > 4) {
 						logger.warn(
 								"We had more files than necessary in the folder for update {}",
 								nextUpdate.getName());
@@ -255,12 +255,17 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 
 		}
 		Path nextUpdate = null;
+		int countUpdates = objects.size();
 		for (Path p : objects) {
+			countUpdates--;
 			String updateVersion = p.getName();
 			logger.debug("Comparing received version {} with update folder {}",
 					currentVersion, updateVersion);
 			if (currentVersion.compareTo(updateVersion) < 0) {
+				logger.debug("Version {} seems to be newer than {}",
+						updateVersion, currentVersion);
 				boolean disabled = false;
+				boolean migrationNeeded = true;
 				try {
 					Path disabledFile = getPath(Utils.concatUrl(
 							p.getAbsolutePath(), ".disabled"));
@@ -269,11 +274,26 @@ public abstract class AbstractPathBasedRepo extends CacheLoader<String, App>
 					disabled = false;
 					logger.info("Update {} is disabled", p.getName());
 				}
-				logger.debug("Version {} seems to be newer than {}",
-						updateVersion, currentVersion);
-				if (!disabled) {
-					nextUpdate = p;
+				try {
+					Path nomigrationsFile = getPath(Utils.concatUrl(
+							p.getAbsolutePath(), ".nomigrations"));
+					migrationNeeded = !nomigrationsFile.exists();
+				} catch (Exception e) {
+					migrationNeeded = true;
+					logger.info("Update {} does migrations", p.getName());
+				}
+				if (disabled) {
 					break;
+				} else {
+					nextUpdate = p;
+
+					if (migrationNeeded) {
+						break;
+					}
+					
+					if(countUpdates == 0){
+						break;
+					}
 				}
 			}
 		}

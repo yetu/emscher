@@ -109,7 +109,8 @@ public class FileRepoTestCase {
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
 		Assert.assertEquals("B", updatedApp.getVersion());
-		Assert.assertTrue(updatedApp.getUpdatecheck().getUrls().iterator().next().getCodebase().endsWith("/"));
+		Assert.assertTrue(updatedApp.getUpdatecheck().getUrls().iterator()
+				.next().getCodebase().endsWith("/"));
 		Assert.assertEquals("sha1#B", updatedApp.getUpdatecheck().getManifest()
 				.getPackages().iterator().next().getHash());
 	}
@@ -125,16 +126,16 @@ public class FileRepoTestCase {
 		requestApp.setBoard("yetu-pfla02");
 		requestApp.setTrack("npower-pilot");
 		requestApp.setVersion("B");
-		
-		//Test disable via disable file
-		File disableFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,"yetu-pfla02", "npower-pilot",
-				"R39-C-a1",".disable"));
+
+		// Test disable via disable file
+		File disableFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,
+				"yetu-pfla02", "npower-pilot", "R39-C-a1", ".disabled"));
 		disableFile.createNewFile();
-		
+
 		App updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
-		
-		//Test disable via folder name
+
+		// Test disable via folder name
 		Files.move(Paths.get(UPDATE_BASE_PATH, "yetu-pfla02", "npower-pilot",
 				"R39-C-a1"), Paths.get(UPDATE_BASE_PATH, "yetu-pfla02",
 				"npower-pilot", "disabled_R39-C-a1"),
@@ -142,6 +143,63 @@ public class FileRepoTestCase {
 
 		updatedApp = repo.getUpdateForVersion(requestApp);
 		Assert.assertEquals("noupdate", updatedApp.getUpdatecheck().getStatus());
+	}
+
+	@Test
+	public void testMigrations() throws Exception {
+		FileRepoConfig config = new FileRepoConfig();
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
+		config.setBaseUrl("http://updates.yetu.me/gateway/static");
+
+		// Test nomigrationsFile
+		File disableFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,
+				"yetu-pfla02", "npower-pilot", "R39-B-a1", ".nomigrations"));
+		disableFile.createNewFile();
+
+		FileRepository repo = new FileRepository(config, new ObjectMapper());
+		App requestApp = new App();
+		requestApp.setBoard("yetu-pfla02");
+		requestApp.setTrack("npower-pilot");
+		requestApp.setVersion("A");
+
+		App updatedApp = repo.getUpdateForVersion(requestApp);
+		disableFile.delete();
+
+		Assert.assertEquals("C", updatedApp.getVersion());
+
+	}
+
+	@Test
+	public void testLastUpdateIsDisabled() throws Exception {
+		FileRepoConfig config = new FileRepoConfig();
+		config.setBasePath(new File(UPDATE_BASE_PATH).getAbsolutePath());
+		config.setBaseUrl("http://updates.yetu.me/gateway/static");
+
+		// Test disable via disable file
+		File disableFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,
+				"yetu-pfla02", "npower-pilot", "R39-C-a1", ".disabled"));
+		boolean disableFileCreated = disableFile.createNewFile();
+		Assert.assertTrue(disableFileCreated);
+
+		// Test nomigrationsFile
+		File migrationFile = new File(Utils.concatUrl(UPDATE_BASE_PATH,
+				"yetu-pfla02", "npower-pilot", "R39-B-a1", ".nomigrations"));
+		migrationFile.createNewFile();
+		
+		FileRepository repo = new FileRepository(config, new ObjectMapper());
+		App requestApp = new App();
+		requestApp.setBoard("yetu-pfla02");
+		requestApp.setTrack("npower-pilot");
+		requestApp.setVersion("A");
+		
+		App updatedApp = repo.getUpdateForVersion(requestApp);
+		
+		migrationFile.delete();
+		disableFile.delete();
+
+		Assert.assertNotNull(updatedApp);
+		Assert.assertEquals("ok", updatedApp.getUpdatecheck().getStatus());
+		Assert.assertEquals("B", updatedApp.getVersion());
 	}
 
 	@AfterClass
