@@ -1,9 +1,6 @@
 FROM java:8 
 ENV APP_VERSION="0.0.2"
 ENV APP_URL="https://bintray.com/artifact/download/yetu/maven/com/yetu/app/${APP_VERSION}/app-${APP_VERSION}.jar"
-ENV CONFIG_DIR="/srv/emscher/config"
-ENV LOG_DIR="/srv/emscher/log"
-ENV CONFIG_FILE="${CONFIG_DIR}/emscher.yml"
 
 RUN mkdir -p /srv/emscher/log
 RUN mkdir -p /srv/emscher/config/
