@@ -1,5 +1,5 @@
 FROM java:8 
-ENV APP_VERSION="0.0.2"
+ENV APP_VERSION="0.1.0"
 ENV APP_URL="https://bintray.com/artifact/download/yetu/maven/com/yetu/app/${APP_VERSION}/app-${APP_VERSION}.jar"
 
 RUN mkdir -p /srv/emscher/log
